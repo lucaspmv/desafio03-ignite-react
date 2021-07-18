@@ -33,12 +33,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   });
 
   const addProduct = async (productId: number) => {
-    const updatedCart = [...cart]
-    const productExists = updatedCart.find((product) => product.id === productId)
+    const updatedCart = [...cart];
 
-    const stock = await api.get(`/stock/${productId}`);
+    const productExists = updatedCart.find((product) => (
+      product.id === productId
+    ));
 
-    const stockAmount = stock.data.amount;
+    const stockAmount = await api.get(`stock/${productId}`).then(response => response.data.amount);
     const currentAmount = productExists ? productExists.amount : 0;
     const amount = currentAmount + 1;
 
@@ -59,7 +60,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         updatedCart.push(newProduct);
       }
       setCart(updatedCart);
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart));
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart))
     } catch {
       toast.error('Erro na adição do produto');
     }
